@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Deploy script for vestolog-app
+# Update script for vestolog-app - just upload new build files
 set -e
 
-echo "🚀 Starting deployment..."
+echo "🔄 Updating vestolog-app..."
 
 # Check if AWS CLI is installed
 if ! command -v aws &> /dev/null; then
@@ -14,9 +14,6 @@ fi
 echo "📦 Building React application..."
 npm run build
 
-echo "🏗️  Deploying infrastructure to AWS..."
-aws cloudformation deploy --template-file deploy-template.yaml --stack-name vestolog-app-stack --capabilities CAPABILITY_IAM --region us-east-1
-
 echo "📁 Getting S3 bucket name..."
 BUCKET_NAME=$(aws cloudformation describe-stacks --stack-name vestolog-app-stack --query 'Stacks[0].Outputs[?OutputKey==`BucketName`].OutputValue' --output text)
 
@@ -24,9 +21,9 @@ echo "⬆️  Uploading build files to S3 bucket: $BUCKET_NAME"
 aws s3 sync build/ s3://$BUCKET_NAME/ --delete
 
 echo "🌍 Invalidating CloudFront cache..."
-DISTRIBUTION_ID=$(aws cloudformation describe-stacks --stack-name vestolog-app-stack --query 'Stacks[0].Outputs[?OutputKey==`WebURL`].OutputValue' --output text | cut -d'.' -f1)
+DISTRIBUTION_ID="E1IHED8QTORFD7"
 aws cloudfront create-invalidation --distribution-id $DISTRIBUTION_ID --paths "/*"
 
-echo "🎉 Deployment complete!"
+echo "✅ Update complete!"
 echo "📱 Your app is available at: https://$(aws cloudformation describe-stacks --stack-name vestolog-app-stack --query 'Stacks[0].Outputs[?OutputKey==`WebURL`].OutputValue' --output text)"
 echo "⏳ It may take a few minutes for CloudFront to propagate changes."

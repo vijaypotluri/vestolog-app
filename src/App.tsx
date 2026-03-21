@@ -3,6 +3,9 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { OptionsTable } from './components/OptionsTable';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { ErrorPage } from './components/ErrorPage';
+import { Login } from './components/Login';
+import { Register } from './components/Register';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -10,12 +13,16 @@ function App() {
       <Router>
         <div className="App">
           <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
             <Route path="/" element={
-              <div className="App">
-                <header className="App-header">
-                  <OptionsTable/>
-                </header>
-              </div>
+              <ProtectedRoute>
+                <div className="App">
+                  <header className="App-header">
+                    <OptionsTable/>
+                  </header>
+                </div>
+              </ProtectedRoute>
             } />
             <Route path="/error" element={<ErrorPage />} />
             <Route path="/403" element={<ErrorPage statusCode={403} />} />
