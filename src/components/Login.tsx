@@ -14,21 +14,29 @@ export const Login: React.FC = () => {
   const onFinish = async (values: LoginRequest & { remember: boolean }) => {
     setLoading(true);
     try {
+      console.log('Attempting login with:', values.email);
       const result = await authService.login({
         email: values.email,
         password: values.password
       });
       
+      console.log('Login result:', result);
+      
       if (result.error) {
+        console.log('Login error:', result.error);
         message.error(result.error);
       } else {
+        console.log('Login successful, token:', result.token);
         message.success(result.message || 'Login successful!');
         if (result.token) {
           authService.storeToken(result.token);
+          console.log('Token stored, checking auth:', authService.isAuthenticated());
         }
+        console.log('Navigating to home...');
         navigate('/');
       }
     } catch (error) {
+      console.error('Login error:', error);
       message.error('An unexpected error occurred');
     } finally {
       setLoading(false);
